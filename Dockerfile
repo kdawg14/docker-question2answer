@@ -24,7 +24,10 @@ RUN apt-get install --assume-yes --no-install-recommends --no-install-suggests \
     ssl-cert
 RUN make-ssl-cert generate-default-snakeoil --force-overwrite
 COPY etc/apache2/sites-available /etc/apache2/sites-available
-COPY etc/apache2/sites-enabled /etc/apache2/sites-enabled
+RUN rm -rf /etc/apache2/sites-enabled
+RUN mkdir /etc/apache2/sites-enabled
+RUN ln -s ../sites-available/000-default.conf /etc/apache2/sites-enabled/000-default.conf
+RUN ln -s ../sites-available/default-ssl.conf /etc/apache2/sites-enabled/default-ssl.conf
 
 #####
 # Install PHP
@@ -64,7 +67,7 @@ RUN apt-get install --assume-yes --no-install-recommends --no-install-suggests \
 
 RUN echo "TLS_REQCERT  allow" >> /etc/ldap/ldap.conf 
 
-RUN git clone --branch "master" https://github.com/q2a/question2answer.git \
+RUN git clone --branch "v1.8.6" https://github.com/q2a/question2answer.git \
  && git clone https://github.com/amiyasahu/Donut.git \
  && git clone https://github.com/ganbox/qa-filter.git /question2answer/qa-plugin/qa-filter \
  && git clone https://github.com/NoahY/q2a-poll.git /question2answer/qa-plugin/qa-poll \
